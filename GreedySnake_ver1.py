@@ -21,7 +21,7 @@ dis_height = 400
 #創建screen
 dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('Snake Game by Edureka')
-game_time = 3
+game_start = 3
 
 #物體移動的速度(??????
 clock = pygame.time.Clock()
@@ -43,10 +43,11 @@ def countdown(t):
     if t > 0: 
         mins, secs = divmod(t, 60) 
         timer = '{:02d}:{:02d}'.format(mins, secs) 
-        print(timer, end="\n") 
+        # print(timer, end="\n") 
         time.sleep(1) 
         t -= 1
         countdown(t)
+        return timer
 
 #遊戲歡迎畫面
 def welcomePage():
@@ -54,8 +55,10 @@ def welcomePage():
 
     Button1_w = 140
     Button1_h = 55
-    Button1_w_c = (dis_width - Button1_w)/2
-    Button1_h_c = (dis_height - Button1_h)/2
+    # Button1_w_c = (dis_width - Button1_w)/2
+    # Button1_h_c = (dis_height - Button1_h)/2
+    Button1_w_c = (dis_width - Button1_w)*3/4
+    Button1_h_c = (dis_height - Button1_h)*3/4
     
       
     
@@ -76,10 +79,10 @@ def welcomePage():
                     running = False
                     
         #背景填滿            
-        dis.fill(white)  
-  
-        #得到(x,y)的滑鼠位置
-        mouse = pygame.mouse.get_pos()  
+        # dis.fill(white)  
+        bg = pygame.image.load("snake_smaller.png")
+        dis.blit(bg, bg.get_rect())
+
           
         # 如果滑鼠在按鈕上，則會呈現較亮的顏色 
         if Button1_w_c <= mouse[0] <= Button1_w_c + Button1_w and Button1_h_c <= mouse[1] <= Button1_h_c + Button1_h:  
@@ -95,7 +98,31 @@ def welcomePage():
         pygame.display.update()
 
 
-
+def countDownPage(t):
+    Button1_w = 140
+    Button1_h = 55
+    Button1_w_c = (dis_width - Button1_w)/2
+    Button1_h_c = (dis_height - Button1_h)/2
+    
+    # running = True
+    # while running:  
+    if t > 0:
+        for ev in pygame.event.get():  
+            
+            #用叉叉關掉視窗的寫法
+            if ev.type == pygame.QUIT:    
+                pygame.quit()  
+                
+        dis.fill(white)
+        mins, secs = divmod(t, 60) 
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        text = score_font.render(timer , True , black)
+        dis.blit(text ,(Button1_w_c + 29, Button1_h_c))
+        pygame.display.update()
+        time.sleep(1) 
+        t -= 1
+        countDownPage(t)
+        
 
 
  
@@ -124,9 +151,8 @@ def gameLoop():
  
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
-    
+    count = 0
     while not game_over:
- 
         while game_close == True:
             dis.fill(blue)
             message("You Lost! Press C-Play Again or Q-Quit", red)
@@ -141,22 +167,34 @@ def gameLoop():
                     if event.key == pygame.K_c:
                         gameLoop()
         
+        #讓蛇在遊戲一開始就動了
+        if count == 0 :
+            x1_change = -snake_block
+            y1_change = 0
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-            if event.type == pygame.KEYDOWN:
+                
+
+                
+            if event.type == pygame.KEYDOWN:    
                 if event.key == pygame.K_LEFT:
                     x1_change = -snake_block
                     y1_change = 0
+                    count += 1
                 elif event.key == pygame.K_RIGHT:
                     x1_change = snake_block
                     y1_change = 0
+                    count += 1
                 elif event.key == pygame.K_UP:
                     y1_change = -snake_block
                     x1_change = 0
+                    count += 1
                 elif event.key == pygame.K_DOWN:
                     y1_change = snake_block
                     x1_change = 0
+                    count += 1
         
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             game_close = True
@@ -192,7 +230,7 @@ def gameLoop():
     quit()
 
 welcomePage()
-countdown(game_time)
+countDownPage(game_start)
 gameLoop()
 
 
