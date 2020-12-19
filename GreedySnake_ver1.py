@@ -34,19 +34,25 @@ font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
 
  
-def our_snake(snake_list, i):
+def our_snake(snake_list, i, eated):
     angle = 90 * i
     rotated_image = pygame.transform.rotate(snakeHead, angle)
     dis.blit(rotated_image, (snake_list[-1][0], snake_list[-1][1]))
 
     idx = 0
     for x in snake_list[:-1]:
-        color1 = 180 + idx * 10
-        if color1 >= 255:
-            color1 = 255
-        pygame.draw.rect(dis, (body[0], color1, body[2]), [x[0], x[1], snake_block, snake_block])
+        if x in eated:
+            pygame.draw.rect(dis, yellow, [x[0], x[1], snake_block, snake_block])
+            if idx == 0:
+                del eated[0]
+        else:
+            color1 = 180 + idx * 10
+            if color1 >= 255:
+                color1 = 255
+            pygame.draw.rect(dis, (body[0], color1, body[2]), [x[0], x[1], snake_block, snake_block])
         idx = idx + 1
- 
+    return eated
+
  
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
@@ -56,6 +62,13 @@ def message(msg, color):
 # Get the coordinate of food
 def getCoordinate(dis):
     return round(random.randrange(0, dis - snake_block) / snake_block) * snake_block
+
+
+def getNewFoodPos(snake_List):
+    food = [getCoordinate(dis_width), getCoordinate(dis_height)]
+    if food in snake_List:
+        return getNewFoodPos(snake_List)
+    return food
 
 
 def gameLoop():
@@ -68,7 +81,7 @@ def gameLoop():
     x1_change = 0
     y1_change = 0
     iRotate = 0
- 
+    eated = []
     snake_List = []
     Length_of_snake = 1
  
@@ -133,17 +146,17 @@ def gameLoop():
                 pygame.mixer.music.load("./sound/crash.mp3")
                 pygame.mixer.music.play(1)
                 game_close = True
- 
-        our_snake(snake_List, iRotate)
- 
- 
+
+        eated = our_snake(snake_List, iRotate, eated)
         pygame.display.update()
- 
+
         if x1 == foodx and y1 == foody:
             pygame.mixer.music.load("./sound/eat.mp3")
             pygame.mixer.music.play(1)
-            foodx = getCoordinate(dis_width)
-            foody = getCoordinate(dis_height)
+            eated.append([foodx, foody])
+            food = getNewFoodPos(snake_List)
+            foodx = food[0]
+            foody = food[1]
             Length_of_snake += 1
  
         clock.tick(snake_speed)
