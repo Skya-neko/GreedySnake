@@ -1,0 +1,18 @@
+{
+    "DEBUG": false,
+    "music_sound": true,
+    "effect_sound": true,
+    "show_fps": false,
+    "show_score": true,
+    "high_scores": [
+        40,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]
+}
