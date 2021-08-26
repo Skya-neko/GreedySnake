@@ -1,0 +1,17 @@
+{
+    "music_sound": false,
+    "effect_sound": true,
+    "show_fps": false,
+    "show_score": true,
+    "high_scores": [
+        220,
+        170,
+        130,
+        120,
+        110,
+        80,
+        60,
+        50,
+        40
+    ]
+}
